@@ -1,0 +1,9 @@
+
+Grip Java output:
+1) generate the code with no package 
+Needed to change the output of grip.
+
+Change the VisionPipeline import to this
+import edu.wpi.first.vision.VisionPipeline;
+
+Chrome has a book mark for the 
