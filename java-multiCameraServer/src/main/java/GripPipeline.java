@@ -1,4 +1,3 @@
-package frc.robot;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,12 +27,12 @@ import org.opencv.objdetect.*;
 public class GripPipeline implements VisionPipeline {
 
 	//Outputs
-	private Mat blurOutput = new Mat();
-	private Mat hslThreshold0Output = new Mat();
-	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
-	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
-	private Mat hslThreshold1Output = new Mat();
-	private MatOfKeyPoint findBlobsOutput = new MatOfKeyPoint();
+	private static Mat blurOutput = new Mat();
+	private static Mat hslThreshold0Output = new Mat();
+	private static ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
+	private static ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
+	private static Mat hslThreshold1Output = new Mat();
+	private static MatOfKeyPoint findBlobsOutput = new MatOfKeyPoint();
 
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -58,7 +57,7 @@ public class GripPipeline implements VisionPipeline {
 
 		// Step Find_Contours0:
 		Mat findContoursInput = hslThreshold0Output;
-		boolean findContoursExternalOnly = false;
+		boolean findContoursExternalOnly = true; //Originally set as false
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
 
 		// Step Filter_Contours0:
@@ -112,7 +111,7 @@ public class GripPipeline implements VisionPipeline {
 	 * This method is a generated getter for the output of a Find_Contours.
 	 * @return ArrayList<MatOfPoint> output from Find_Contours.
 	 */
-	public ArrayList<MatOfPoint> findContoursOutput() {
+	public static ArrayList<MatOfPoint> findContoursOutput() {
 		return findContoursOutput;
 	}
 

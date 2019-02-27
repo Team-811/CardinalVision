@@ -33,6 +33,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.RotatedRect;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.core.MatOfKeyPoint;
 
 /*
    JSON format:
@@ -206,7 +207,7 @@ public final class Main {
   /**
    * Example pipeline.
    */
-  public static class MyPipeline implements VisionPipeline {
+  public static class GripPipeline implements VisionPipeline {
     public int val;
 
     @Override
@@ -248,7 +249,7 @@ public final class Main {
     // start NetworkTables
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
     //set up the entries
-    NetworkTable roiTable = ntinst.getTable("ROIs");
+    NetworkTable roiTable = ntinst.getTable("VisionTarget");
 
     if (server) {
       System.out.println("Setting up NetworkTables server");
@@ -286,7 +287,8 @@ public final class Main {
           }
 
           // publish the result to the
-          ArrayList<MatOfPoint> contours = pipeline.findContoursOutput();
+          ArrayList<MatOfPoint> tapeContours = pipeline.findContoursOutput();
+          MatOfKeyPoint cargoTargets = pipeline.findBlobsOutput();
           for (int index = 0; index < contours.size(); index++)
           {
               MatOfPoint contour = contours.get(index);
