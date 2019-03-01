@@ -24,7 +24,7 @@ import org.opencv.objdetect.*;
 *
 * @author GRIP
 */
-public class GripPipeline implements VisionPipeline {
+public class CardinalPipeline implements VisionPipeline {
 
 	//Outputs
 	private static Mat blurOutput = new Mat();
