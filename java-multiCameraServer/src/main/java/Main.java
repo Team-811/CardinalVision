@@ -594,6 +594,8 @@ public final class Main {
   /**
    * Main.
    */
+
+  
   public static void main(String... args) {
     if (args.length > 0) {
       configFile = args[0];
@@ -651,7 +653,7 @@ public final class Main {
 
           //sort
           //sortCenX(individualTapeTargets);
-          int counter = 0;
+          
           for(int index = 0; index < individualTapeTargets.size(); index++)
           {
               if(counter == 20)
