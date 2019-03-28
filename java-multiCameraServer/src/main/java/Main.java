@@ -226,7 +226,7 @@ public final class Main {
     private static ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
     private static ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
     private static Mat hslThreshold1Output = new Mat();
-    private static MatOfKeyPoint findBlobsOutput = new MatOfKeyPoint();
+   // private static MatOfKeyPoint findBlobsOutput = new MatOfKeyPoint();
   
     static {
       System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -270,6 +270,7 @@ public final class Main {
       filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
   
       // Step HSL_Threshold1:
+      /*
       Mat hslThreshold1Input = blurOutput;
       double[] hslThreshold1Hue = {0.0, 12.525414757898195};
       double[] hslThreshold1Saturation = {255.0, 255.0};
@@ -282,7 +283,7 @@ public final class Main {
       double[] findBlobsCircularity = {0.6026365348399246, 1.0};
       boolean findBlobsDarkBlobs = false;
       findBlobs(findBlobsInput, findBlobsMinArea, findBlobsCircularity, findBlobsDarkBlobs, findBlobsOutput);
-  
+      */
     }
   
     /**
@@ -329,10 +330,12 @@ public final class Main {
      * This method is a generated getter for the output of a Find_Blobs.
      * @return MatOfKeyPoint output from Find_Blobs.
      */
+    
+     /*
     public MatOfKeyPoint findBlobsOutput() {
       return findBlobsOutput;
     }
-  
+    */
   
     /**
      * An indication of which type of filter to use for a blur.
@@ -485,7 +488,7 @@ public final class Main {
       Core.inRange(out, new Scalar(hue[0], lum[0], sat[0]),
         new Scalar(hue[1], lum[1], sat[1]), out);
     }
-  
+    
     /**
      * Detects groups of pixels in an image.
      * @param input The image on which to perform the find blobs.
@@ -494,6 +497,8 @@ public final class Main {
      * @param darkBlobs The boolean that determines if light or dark blobs are found.
      * @param blobList The output where the MatOfKeyPoint is stored.
      */
+
+     /*
     private void findBlobs(Mat input, double minArea, double[] circularity,
       Boolean darkBlobs, MatOfKeyPoint blobList) {
       FeatureDetector blobDet = FeatureDetector.create(FeatureDetector.SIMPLEBLOB);
@@ -545,6 +550,8 @@ public final class Main {
   
       blobDet.detect(input, blobList);
     }
+
+    */
   
   }
 
@@ -570,6 +577,11 @@ public final class Main {
   private double getVerticalDegreesToPixels(double targetYpixels)
   {
       return Math.atan((targetYpixels - centerPixelVertical) / getFocalLength());
+  }
+
+  private double getMetersPerPixel(double targetWidthPixels)
+  {
+      return 1.1 / targetWidthPixels;
   }
 
 
@@ -633,34 +645,47 @@ public final class Main {
       VisionThread visionThread = new VisionThread(cameras.get(0),
            new CardinalPipeline(), pipeline -> {
 
-            //Arraylists for targets
-          ArrayList<Double> xOffset = new ArrayList<>();
-          ArrayList<Double> distance = new ArrayList<>();
-          ArrayList<Double> angle = new ArrayList<>();
-
 
           // publish the result to the
           ArrayList<MatOfPoint> tapeContours = pipeline.findContoursOutput();
-          MatOfKeyPoint cargoTargets = pipeline.findBlobsOutput();
+          //MatOfKeyPoint cargoTargets = pipeline.findBlobsOutput();
           ArrayList<RotatedRect> individualTapeTargets = new ArrayList<>();
 
+          //adds targets to individual targets
           for (int index = 0; index < tapeContours.size(); index++)
           {
               MatOfPoint contour = tapeContours.get(index);
               individualTapeTargets.add(Imgproc.minAreaRect(new MatOfPoint2f(contour.toArray())));
           }
 
-          ArrayList<Double[]> fullTapeTargets = new ArrayList<>();
+          //Finds the grouping of vision targets
+          ArrayList<GoalTarget> fullTapeTargets = new ArrayList<>();
 
-          for (int index = 0; index < tapeContours.size(); index+=2)
+          for (int index = 0; index < individualTapeTargets.size(); index+=2)
           {
-              if(Math.abs(individualTapeTargets.get(index).angle - individualTapeTargets.get(index + 1).angle) > 300 && Math.abs(individualTapeTargets.get(index).angle - individualTapeTargets.get(index + 1).angle) < 355)
+              if(individualTapeTargets.get(index).angle > 320 && individualTapeTargets.get(index + 1).angle < 40)
               {
-                  double cenX = (individualTapeTargets.get(index).center.x + individualTapeTargets.get(index + 1).center.x) / 2;
-                  Double[] targetLocation = {cenX, individualTapeTargets.get(index).center.y};
-                  fullTapeTargets.add(targetLocation);
+                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index), individualTapeTargets.get(index + 1)));
+              }
+              if(individualTapeTargets.get(index).angle < 40 && individualTapeTargets.get(index + 1).angle > 320)
+              {
+                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index + 1), individualTapeTargets.get(index)));
               }
           }
+
+          double[] xOffset = new double[fullTapeTargets.size()];
+          double[] distance = new double[fullTapeTargets.size()];
+          double[] angle = new double[fullTapeTargets.size()];
+
+          for(int index = 0; index < fullTapeTargets.size(); index++)
+          {
+            xOffset[index] = Math.tan(a));
+            distance[index] = ;
+            angle[index] = getHorizontalDegreesToPixels(fullTapeTargets.get(index).centerX());
+
+          }
+
+          WriteRoiToNetworkTable(roiTable, xOffset, distance, angle);
 
           
          
