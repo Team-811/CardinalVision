@@ -557,15 +557,18 @@ public final class Main {
   }
 
 
-  public void sortCenX(ArrayList<RotatedRect> targets)
+  public static void sortCenX(ArrayList<RotatedRect> targets)
   {
     for(int i = 1; i < targets.size(); i++)
     {
+        RotatedRect key = targets.get(i);
         int index = i - 1;
-        while(targets.get(i).center.x > targets.get(index).center.x && index < i)
+        while(key.center.x > targets.get(index).center.x && index >= 0)
         {
-            index++;
+            targets.set(index + 1, targets.get(index));
+            index--;
         }
+        targets.set(index + 1, key);
     }
 
   }
@@ -647,36 +650,50 @@ public final class Main {
           }
 
           //sort
-          Collections.sort(list, c);
+          //sortCenX(individualTapeTargets);
+          int counter = 0;
+          for(int index = 0; index < individualTapeTargets.size(); index++)
+          {
+              if(counter == 20)
+              {
+                System.out.println(individualTapeTargets.get(index).center.x);
+                System.out.println(individualTapeTargets.get(index).center.y);
+                System.out.println(individualTapeTargets.get(index).angle);
+              }
+          }
+          if(counter == 20)
+            counter = 0;
+          else
+            counter ++;
 
           //Finds the grouping of vision targets
-          ArrayList<GoalTarget> fullTapeTargets = new ArrayList<>();
+          // ArrayList<GoalTarget> fullTapeTargets = new ArrayList<>();
 
-          for (int index = 0; index < individualTapeTargets.size(); index+=2)
-          {
-              if(individualTapeTargets.get(index).angle > 320 && individualTapeTargets.get(index + 1).angle < 40)
-              {
-                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index  + 1), individualTapeTargets.get(index)));
-              }
-              if(individualTapeTargets.get(index).angle < 40 && individualTapeTargets.get(index + 1).angle > 320)
-              {
-                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index), individualTapeTargets.get(index + 1)));
-              }
-          }
+          // for (int index = 0; index < individualTapeTargets.size(); index+=2)
+          // {
+          //     if(individualTapeTargets.get(index).angle > 320 && individualTapeTargets.get(index + 1).angle < 40)
+          //     {
+          //         fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index  + 1), individualTapeTargets.get(index)));
+          //     }
+          //     if(individualTapeTargets.get(index).angle < 40 && individualTapeTargets.get(index + 1).angle > 320)
+          //     {
+          //         fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index), individualTapeTargets.get(index + 1)));
+          //     }
+          // }
 
-          double[] xOffset = new double[fullTapeTargets.size()];
-          double[] distance = new double[fullTapeTargets.size()];
-          double[] angle = new double[fullTapeTargets.size()];
+          // double[] xOffset = new double[fullTapeTargets.size()];
+          // double[] distance = new double[fullTapeTargets.size()];
+          // double[] angle = new double[fullTapeTargets.size()];
 
-          for(int index = 0; index < fullTapeTargets.size(); index++)
-          {
-            GoalTarget target = fullTapeTargets.get(index);
-            xOffset[index] = CameraCalculations.getXOffset(target.targetWidth(), target.centerX());
-            distance[index] = CameraCalculations.getDistance(target.targetWidth(), target.centerX());
-            angle[index] = CameraCalculations.getHorizontalDegreesToPixels(target.centerX());
-          }
+          // for(int index = 0; index < fullTapeTargets.size(); index++)
+          // {
+          //   GoalTarget target = fullTapeTargets.get(index);
+          //   xOffset[index] = CameraCalculations.getXOffset(target.targetWidth(), target.centerX());
+          //   distance[index] = CameraCalculations.getDistance(target.targetWidth(), target.centerX());
+          //   angle[index] = CameraCalculations.getHorizontalDegreesToPixels(target.centerX());
+          // }
 
-          WriteRoiToNetworkTable(roiTable, xOffset, distance, angle);
+          //WriteRoiToNetworkTable(roiTable, xOffset, distance, angle);
          
       });
       
@@ -694,4 +711,4 @@ public final class Main {
   }
 
 }
-}
+
