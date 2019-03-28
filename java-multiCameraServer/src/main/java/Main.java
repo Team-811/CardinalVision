@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -556,33 +557,20 @@ public final class Main {
   }
 
 
-  //camera methods
-
-  private final double fovHorizontal = 61;
-  private final double pixelsHorizontal = 0;
-  private final double pixelsVertical = 0;
-  private final double centerPixelHorizontal = pixelsHorizontal/2;
-  private final double centerPixelVertical = pixelsVertical/2;
-
-  private double getFocalLength()
+  public void sortCenX(ArrayList<RotatedRect> targets)
   {
-      return pixelsHorizontal / (2 * Math.tan(fovHorizontal/2));
+    for(int i = 1; i < targets.size(); i++)
+    {
+        int index = i - 1;
+        while(targets.get(i).center.x > targets.get(index).center.x && index < i)
+        {
+            index++;
+        }
+    }
+
   }
 
-  private double getHorizontalDegreesToPixels(double targetXpixels)
-  {
-      return -1 * Math.atan((targetXpixels - centerPixelHorizontal) / getFocalLength());
-  }
-
-  private double getVerticalDegreesToPixels(double targetYpixels)
-  {
-      return Math.atan((targetYpixels - centerPixelVertical) / getFocalLength());
-  }
-
-  private double getMetersPerPixel(double targetWidthPixels)
-  {
-      return 1.1 / targetWidthPixels;
-  }
+  
 
 
   static int counter = 0; // this is just a temp, not to spam the console
@@ -658,6 +646,9 @@ public final class Main {
               individualTapeTargets.add(Imgproc.minAreaRect(new MatOfPoint2f(contour.toArray())));
           }
 
+          //sort
+          Collections.sort(list, c);
+
           //Finds the grouping of vision targets
           ArrayList<GoalTarget> fullTapeTargets = new ArrayList<>();
 
@@ -665,11 +656,11 @@ public final class Main {
           {
               if(individualTapeTargets.get(index).angle > 320 && individualTapeTargets.get(index + 1).angle < 40)
               {
-                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index), individualTapeTargets.get(index + 1)));
+                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index  + 1), individualTapeTargets.get(index)));
               }
               if(individualTapeTargets.get(index).angle < 40 && individualTapeTargets.get(index + 1).angle > 320)
               {
-                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index + 1), individualTapeTargets.get(index)));
+                  fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index), individualTapeTargets.get(index + 1)));
               }
           }
 
@@ -679,15 +670,13 @@ public final class Main {
 
           for(int index = 0; index < fullTapeTargets.size(); index++)
           {
-            xOffset[index] = Math.tan(a));
-            distance[index] = ;
-            angle[index] = getHorizontalDegreesToPixels(fullTapeTargets.get(index).centerX());
-
+            GoalTarget target = fullTapeTargets.get(index);
+            xOffset[index] = CameraCalculations.getXOffset(target.targetWidth(), target.centerX());
+            distance[index] = CameraCalculations.getDistance(target.targetWidth(), target.centerX());
+            angle[index] = CameraCalculations.getHorizontalDegreesToPixels(target.centerX());
           }
 
           WriteRoiToNetworkTable(roiTable, xOffset, distance, angle);
-
-          
          
       });
       
@@ -703,4 +692,6 @@ public final class Main {
       }
     }
   }
+
+}
 }
