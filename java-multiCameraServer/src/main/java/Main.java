@@ -569,7 +569,7 @@ public final class Main {
           for (int index = 0; index < individualTapeTargets.size() - 1; index++)
           {
               if(individualTapeTargets.get(index).angle > -100 && individualTapeTargets.get(index).angle < -45 && individualTapeTargets.get(index + 1).angle > -40 && 
-                individualTapeTargets.get(index + 1).angle < -1)
+                individualTapeTargets.get(index + 1).angle < 0)
               {
                   fullTapeTargets.add(new GoalTarget(individualTapeTargets.get(index  + 1), individualTapeTargets.get(index)));
               }
