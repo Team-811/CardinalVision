@@ -2,12 +2,12 @@
 
 public class CameraCalculations
 {
-  private static final double fovHorizontal = 61;
+  private static final double fovHorizontal = 70.42;
   private static final double pixelsHorizontal = 320;
   private static final double pixelsVertical = 240;
   private static final double centerPixelHorizontal = pixelsHorizontal/2;
   private static final double centerPixelVertical = pixelsVertical/2;
-  private static final double distanceBetweenTargets = 1.1;
+  private static final double distanceBetweenTargets = 0.288925;
 
   public static double getFocalLength()
   {
